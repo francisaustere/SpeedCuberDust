@@ -1,0 +1,88 @@
+export interface PhysicsConfig {
+    GRAVITY: number;
+    // New Gravity Scalers
+    GRAVITY_ASCENT_MULTIPLIER: number;
+    GRAVITY_DESCENT_MULTIPLIER: number;
+
+    JUMP_FORCE: number;
+    DOUBLE_JUMP_FORCE: number;
+    MAX_SPEED: number;
+    ACCEL_GROUND: number;
+    ACCEL_AIR: number;
+    SPIN_AIR_ACCEL: number;
+    ACCEL_GROUND_EXPONENT: number;
+    FRICTION: number;
+    AIR_FRICTION: number;
+    AIR_FRICTION_ACTIVE: number; // Friction when input is pressed
+    MAX_FALL_VELOCITY: number;
+    WALL_SLIDE_SPEED: number;
+    WALL_JUMP_X: number;
+    WALL_JUMP_Y: number;
+    WALL_JUMP_INPUT_INFLUENCE: boolean;
+    WALL_JUMP_GRACE_PERIOD: number;
+    COYOTE_TIME: number;
+    JUMP_BUFFER: number;
+    SPIN_ACCELERATION_ENABLED: boolean;
+    SPIN_ACCELERATION_RATE: number;
+    SPIN_DECELERATION_RATE: number;
+    SPIN_MAX_SPEED: number;
+    SPIN_START_DELAY: number;
+
+    // Spin Trajectory Effects
+    SPIN_EFFECT_MODE: number;
+    SPIN_EFFECT_STRENGTH: number;
+    SPIN_EFFECT_DECAY: number;
+
+    // Ceiling Traversal
+    CEILING_SPEED: number;
+    CEILING_ACCEL: number;
+
+    DIVING_FORCE: number;
+    BOUNCY_BLOCK_RESTITUTION_X: number;
+    BOUNCY_BLOCK_RESTITUTION_Y: number;
+    BOUNCY_MIN_SPEED: number;
+    PROJECTILE_DEFLECTION_FORCE: number;
+}
+
+export const DEFAULT_PHYSICS_CONFIG: PhysicsConfig = {
+    GRAVITY: 0.8,
+    GRAVITY_ASCENT_MULTIPLIER: 1.0,
+    GRAVITY_DESCENT_MULTIPLIER: 1.0,
+
+    JUMP_FORCE: -15,
+    DOUBLE_JUMP_FORCE: -12.5,
+    MAX_SPEED: 10,
+    ACCEL_GROUND: 6.8,
+    ACCEL_AIR: 0.85,
+    SPIN_AIR_ACCEL: 0.85,
+    ACCEL_GROUND_EXPONENT: 0.2,
+    FRICTION: 0.65,
+    AIR_FRICTION: 0.94,
+    AIR_FRICTION_ACTIVE: 1.0,
+    MAX_FALL_VELOCITY: 25,
+    WALL_SLIDE_SPEED: 1.5,
+    WALL_JUMP_X: 7.0,
+    WALL_JUMP_Y: -12,
+    WALL_JUMP_INPUT_INFLUENCE: false,
+    WALL_JUMP_GRACE_PERIOD: 12,
+    COYOTE_TIME: 8,
+    JUMP_BUFFER: 5,
+    SPIN_ACCELERATION_ENABLED: true,
+    SPIN_ACCELERATION_RATE: 0.025,
+    SPIN_DECELERATION_RATE: 0.023,
+    SPIN_MAX_SPEED: 0.4,
+    SPIN_START_DELAY: 0.1,
+
+    SPIN_EFFECT_MODE: 3,
+    SPIN_EFFECT_STRENGTH: 0.9,
+    SPIN_EFFECT_DECAY: 1.2,
+
+    CEILING_SPEED: 4.5,
+    CEILING_ACCEL: 8,
+
+    DIVING_FORCE: 1,
+    BOUNCY_BLOCK_RESTITUTION_X: 1,
+    BOUNCY_BLOCK_RESTITUTION_Y: 1,
+    BOUNCY_MIN_SPEED: 10,
+    PROJECTILE_DEFLECTION_FORCE: 1.8,
+};
