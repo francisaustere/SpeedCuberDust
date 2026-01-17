@@ -133,7 +133,7 @@ export class PathNavigator {
                 if (n.type === 'JUMP') color = 0xFFFF00;
                 if (n.type === 'DOUBLE_JUMP') color = 0xFFA500;
                 if (n.type === 'WALL_CLIMB') color = 0xFF4500;
-                if (n.type === 'FALL') color = 0xFF0000;
+                if (n.type === 'FALL') color = 0x44ff00;
                 if (n.type === 'RIDE') color = 0x00FFFF;
 
                 const material = new THREE.LineBasicMaterial({ color: color });
