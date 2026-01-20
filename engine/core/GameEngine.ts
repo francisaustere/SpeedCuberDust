@@ -18,6 +18,9 @@ import { SpatialHashGrid } from '../../game/utils/SpatialHashGrid';
 import { PlayerVisuals } from '../../game/components/PlayerVisuals';
 import { WeaponController } from '../../game/components/WeaponController';
 import { UpdateContext } from './UpdateContext';
+import { NavigationDebugRenderer } from '../../game/ai/navigation/NavigationDebugRenderer';
+import { EnemyController } from '../../game/enemies/controllers/EnemyController';
+import { PlatformerMovement } from '../../game/enemies/movement/PlatformerMovement';
 
 export class GameEngine {
     public world: GameWorld;
@@ -31,6 +34,7 @@ export class GameEngine {
     public sceneBuilder: SceneBuilder;
     public gameLoop: GameLoop;
     public spatialHash: SpatialHashGrid;
+    public navigationDebugRenderer: NavigationDebugRenderer | null = null;
 
     public currentLevel: Level | null = null;
     public playerGO: GameObject | null = null;
@@ -70,7 +74,7 @@ export class GameEngine {
             (dt) => this.fixedUpdate(dt),
             (dt, alpha) => this.renderVisuals(dt, alpha)
         );
-
+        this.navigationDebugRenderer = new NavigationDebugRenderer(this.world.scene);
         this.inputSystem.init();
 
         // Hack for components to find engine systems if needed
@@ -87,11 +91,11 @@ export class GameEngine {
 
     public loadLevel(level: Level, configs: any) {
         this.currentLevel = level;
-        this.levelTime = 0; 
+        this.levelTime = 0;
 
         // 1. Delegate Scene Construction
         const sceneResult = this.sceneBuilder.load(level, configs);
-        
+
         // 2. Update Engine State
         this.spatialHash = sceneResult.spatialHash;
         this.dynamicPlatforms = sceneResult.dynamicPlatforms;
@@ -103,6 +107,21 @@ export class GameEngine {
         // 4. Player Setup
         if (!this.playerGO) {
             this.playerGO = this.world.findObjectByName('Player') || null;
+        }
+        // 5. 🆕 Connect Navigation Debug Data Sources
+        if (this.navigationDebugRenderer) {
+            // Trouve le premier ennemi avec PathNavigator pour brancher le debug
+            const enemies = this.world.gameObjects.filter(go => go.tag === 'Enemy');
+            if (enemies.length > 0) {
+                const firstEnemy = enemies[0];
+                const enemyController = firstEnemy.getComponent(EnemyController);
+                if (enemyController && (enemyController as any).movement?.navigator) {
+                    const pathNav = (enemyController as any).movement.navigator;
+                    console.log('[Game Engine Level Onload] pathNav', pathNav);
+                    console.log('[Game Engine Level Onload] pathNav.surfaceSystem', pathNav.surfaceSystem);
+                    this.navigationDebugRenderer.setDataSources(pathNav, pathNav.surfaceSystem);
+                }
+            }
         }
         if (this.playerGO && !this.playerGO.getComponent(WeaponController)) {
             this.playerGO.addComponent(WeaponController, this.world);
@@ -136,6 +155,7 @@ export class GameEngine {
         const config = this.debugConfig.current;
         const input = this.inputSystem.getState();
         const isPaused = config.isDevMode;
+
 
         // Update Timer
         if (this.gameStatus === 'PLAYING' && !isPaused) {
@@ -193,7 +213,7 @@ export class GameEngine {
                 }
             }
         }
-        
+
         this.inputSystem.update();
     }
 
@@ -232,6 +252,26 @@ export class GameEngine {
                 config.isDevMode,
                 alpha
             );
+            if (this.navigationDebugRenderer) {
+                const showNavDebug = config.drawConfig?.showNavigationDebug ?? false;
+                // 🆕 Initialisation dynamique : si activé mais pas connecté (ex: spawn après load), on cherche un ennemi
+                if (showNavDebug && !this.navigationDebugRenderer.hasDataSource()) {
+                    const enemies = this.world.gameObjects.filter(go => go.tag === 'Enemy');
+                    if (enemies.length > 0) {
+                        const firstEnemy = enemies[0];
+                        const enemyController = firstEnemy.getComponent(EnemyController);
+                        if (enemyController && (enemyController as any).movement?.pathNavigator) {
+                            const pathNav = (enemyController as any).movement.pathNavigator;
+                            this.navigationDebugRenderer.setDataSources(pathNav, pathNav.surfaceSystem);
+                        }
+                    }
+                }
+
+                this.navigationDebugRenderer.setEnabled(showNavDebug);
+                if (showNavDebug) {
+                    this.navigationDebugRenderer.render();
+                }
+            }
             if (this.onUpdateCallback) {
                 this.onUpdateCallback({ player: playerState, time: this.levelTime });
             }
@@ -242,6 +282,13 @@ export class GameEngine {
         this.stop();
         this.renderer.dispose();
         this.inputSystem.cleanup();
+
+        // 🆕 Cleanup Navigation Debug
+        if (this.navigationDebugRenderer) {
+            this.navigationDebugRenderer.destroy();
+            this.navigationDebugRenderer = null;
+        }
+
         this.world.clear();
     }
 }

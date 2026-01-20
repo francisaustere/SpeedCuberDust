@@ -62,18 +62,18 @@ export class ActionExecutor {
     }
 
     public update(dt: number) {
-        console.log('🎮 [ActionExecutor] Update:', {
-            isBusy: this.isBusy,
-            rideHandlerActive: this.rideHandler.isActive,
-            rideHandlerState: (this.rideHandler as any).state,
-            climbActive: this.climbHandler.isActive,
-            climbJustFinished: this.climbHandler.justFinished,
-            jumpHandlerActive: this.jumpHandler.isActive,  // ✅ NOUVEAU
-            needsWallClimbActivation: this.needsWallClimbActivation,  // ✅ NOUVEAU
-            currentTarget: this.navigator.getCurrentTarget() ? 'exists' : 'null',
-            pathIndex: this.navigator.pathIndex,
-            pathLength: this.navigator.path.length
-        });
+        // console.log('🎮 [ActionExecutor] Update:', {
+        //     isBusy: this.isBusy,
+        //     rideHandlerActive: this.rideHandler.isActive,
+        //     rideHandlerState: (this.rideHandler as any).state,
+        //     climbActive: this.climbHandler.isActive,
+        //     climbJustFinished: this.climbHandler.justFinished,
+        //     jumpHandlerActive: this.jumpHandler.isActive,  // ✅ NOUVEAU
+        //     needsWallClimbActivation: this.needsWallClimbActivation,  // ✅ NOUVEAU
+        //     currentTarget: this.navigator.getCurrentTarget() ? 'exists' : 'null',
+        //     pathIndex: this.navigator.pathIndex,
+        //     pathLength: this.navigator.path.length
+        // });
 
         this.isSquashing = false;
 
@@ -85,7 +85,7 @@ export class ActionExecutor {
         if (this.jumpHandler.update(dt)) {
             // Si le double jump est terminé ET qu'on attend le wall climb
             if (this.needsWallClimbActivation && !this.jumpHandler.isActive) {
-                console.log('🔵 [ActionExecutor] Double jump finished, activating ClimbHandler');
+                // console.log('🔵 [ActionExecutor] Double jump finished, activating ClimbHandler');
                 this.climbHandler.start(this.wallClimbMeta);
                 this.needsWallClimbActivation = false;
                 this.wallClimbMeta = null;
@@ -95,21 +95,21 @@ export class ActionExecutor {
 
         // Check si le climb vient de se terminer
         if (this.climbHandler.justFinished) {
-            console.log('✅ [ActionExecutor] Climb finished! Force-advancing path.');
+            // console.log('✅ [ActionExecutor] Climb finished! Force-advancing path.');
             this.climbHandler.justFinished = false;
             this.navigator.advance();
             this.physics.state.vx = 0;
 
             const nextTarget = this.navigator.getCurrentTarget();
             const nextMeta = (nextTarget as any)?.meta;
-            console.log('🔍 [ActionExecutor] Next waypoint after climb:', {
-                exists: !!nextTarget,
-                x: nextTarget?.x.toFixed(1),
-                y: nextTarget?.y.toFixed(1),
-                type: nextMeta?.type || 'none',
-                currentX: (this.physics.state.x + this.physics.state.w / 2).toFixed(1),
-                currentY: (this.physics.state.y + this.physics.state.h).toFixed(1)
-            });
+            // console.log('🔍 [ActionExecutor] Next waypoint after climb:', {
+            //     exists: !!nextTarget,
+            //     x: nextTarget?.x.toFixed(1),
+            //     y: nextTarget?.y.toFixed(1),
+            //     type: nextMeta?.type || 'none',
+            //     currentX: (this.physics.state.x + this.physics.state.w / 2).toFixed(1),
+            //     currentY: (this.physics.state.y + this.physics.state.h).toFixed(1)
+            // });
         }
 
         // Path Following Logic
@@ -131,7 +131,7 @@ export class ActionExecutor {
 
         if (!target) {
             if (state.isGrounded) state.vx = 0;
-            console.log(`❌ [ActionExecutor] NO TARGET, stopping.`);
+            // console.log(`❌ [ActionExecutor] NO TARGET, stopping.`);
             return;
         }
 
@@ -141,7 +141,7 @@ export class ActionExecutor {
         if (meta && meta.type === 'RIDE') {
             // 🆕 FIX: Attendre d'être au sol avant d'activer le RIDE
             if (!state.isGrounded) {
-                console.log('⏸️ [ActionExecutor] RIDE delayed: still airborne');
+                //console.log('⏸️ [ActionExecutor] RIDE delayed: still airborne');
                 return; // ← On attend le prochain frame
             }
 
@@ -151,25 +151,25 @@ export class ActionExecutor {
                 return;
             }
 
-            console.log('🚨 [ActionExecutor] RIDE action triggered!', {
-                ridePlatformId: meta.ridePlatformId,
-                rideHandlerState: this.rideHandler.state
-            });
+            // console.log('🚨 [ActionExecutor] RIDE action triggered!', {
+            //     ridePlatformId: meta.ridePlatformId,
+            //     rideHandlerState: this.rideHandler.state
+            // });
 
             if (this.rideHandler.tryShortcut(meta.ridePlatformId)) {
-                console.log('✅ [ActionExecutor] Shortcut succeeded.');
+                //console.log('✅ [ActionExecutor] Shortcut succeeded.');
                 return;
             }
 
             // 🆕 FIX: Si le shortcut échoue, efface currentPlatformId pour éviter le BOARDING prématuré
             if (this.physics.currentPlatformId === meta.ridePlatformId) {
-                console.log('🔄 [ActionExecutor] Shortcut failed, clearing currentPlatformId to avoid false BOARDING.');
+                //console.log('🔄 [ActionExecutor] Shortcut failed, clearing currentPlatformId to avoid false BOARDING.');
                 this.physics.currentPlatformId = null;
             }
 
             // Si le shortcut échoue, démarre le RideHandler en WAITING
             if (this.rideHandler.state === 'NONE') {
-                console.log('🟡 [ActionExecutor] Shortcut failed, starting WAITING mode.');
+                //console.log('🟡 [ActionExecutor] Shortcut failed, starting WAITING mode.');
                 this.rideHandler.start(meta.ridePlatformId);
                 this.navigator.advance();
             }
@@ -178,7 +178,7 @@ export class ActionExecutor {
         // Vertical Fall Check
         if (!this.isOnMovingPlatform() && state.isGrounded &&
             Math.abs(target.y - (state.y + state.h)) > 150) {
-            console.log('[AI] Vertical mismatch. Clearing path.');
+            //console.log('[AI] Vertical mismatch. Clearing path.');
             this.navigator.clearPath();
             return;
         }
@@ -212,36 +212,36 @@ export class ActionExecutor {
             reached = false;
         }
 
-        console.log(`🎯 [ActionExecutor] Target check:`, {
-            dist: dist.toFixed(1),
-            tolerance: arrivalTolerance.toFixed(1),
-            reached,
-            hasMeta: !!meta,
-            metaType: meta?.type || 'none',
-            isGrounded: state.isGrounded
-        });
+        // console.log(`🎯 [ActionExecutor] Target check:`, {
+        //     dist: dist.toFixed(1),
+        //     tolerance: arrivalTolerance.toFixed(1),
+        //     reached,
+        //     hasMeta: !!meta,
+        //     metaType: meta?.type || 'none',
+        //     isGrounded: state.isGrounded
+        // });
 
         if (!reached) {
             // WALK safety checks
             if (meta && meta.type === 'WALK') {
                 if (!this.ballisticSolver.isTargetPlatformReady(meta.targetSurfaceId, meta, target.x)) {
                     state.vx = 0;
-                    console.log(`⚠️ [ActionExecutor] Target platform NOT READY (WALK)`);
+                    // console.log(`⚠️ [ActionExecutor] Target platform NOT READY (WALK)`);
                     return;
                 }
 
                 if (this.isOnMovingPlatform() && !this.isSafeToWalkAhead(dx)) {
                     state.vx = 0;
-                    console.log(`⚠️ [ActionExecutor] NOT SAFE to walk ahead (moving platform)`);
+                    // console.log(`⚠️ [ActionExecutor] NOT SAFE to walk ahead (moving platform)`);
                     return;
                 }
             }
 
             state.vx = Math.sign(dx) * this.config.maxSpeed;
-            console.log(`🚶 [ActionExecutor] Walking towards target, vx=${state.vx.toFixed(2)}`);
+            // console.log(`🚶 [ActionExecutor] Walking towards target, vx=${state.vx.toFixed(2)}`);
             this.debugPrediction = null;
         } else {
-            console.log(`✅ [ActionExecutor] Target REACHED, triggering action or advancing`);
+            // console.log(`✅ [ActionExecutor] Target REACHED, triggering action or advancing`);
             // Action Trigger
             if (meta) {
                 this.triggerAction(meta, target);
@@ -271,13 +271,13 @@ export class ActionExecutor {
             landingX = nextNode ? nextNode.x : target.x;
         }
 
-        console.log('🎯 [triggerAction] Landing X calculation:', {
-            metaType: meta.type,
-            hasDestX: meta.destX !== undefined,
-            destX: meta.destX?.toFixed(1) || 'none',
-            nextNodeExists: !!this.navigator.path[this.navigator.pathIndex + 1],
-            finalLandingX: landingX.toFixed(1)
-        });
+        // console.log('🎯 [triggerAction] Landing X calculation:', {
+        //     metaType: meta.type,
+        //     hasDestX: meta.destX !== undefined,
+        //     destX: meta.destX?.toFixed(1) || 'none',
+        //     nextNodeExists: !!this.navigator.path[this.navigator.pathIndex + 1],
+        //     finalLandingX: landingX.toFixed(1)
+        // });
 
         // Platform Ready Check
         if (['JUMP', 'DOUBLE_JUMP', 'FALL', 'WALL_CLIMB', 'WALK'].includes(meta.type)) {
@@ -307,20 +307,20 @@ export class ActionExecutor {
         // Dispatch to handlers
         switch (meta.type) {
             case 'JUMP':
-                console.log('🔵 [ActionExecutor] JUMP triggered', {
-                    isReady,
-                    isGrounded: state.isGrounded,
-                    distY: distY.toFixed(1),
-                    toleranceY,
-                    landingX: landingX.toFixed(1),
-                    landingY: meta.targetY.toFixed(1),
-                    currentX: (state.x + state.w / 2).toFixed(1),
-                    currentY: (state.y + state.h).toFixed(1),
-                    targetSurfaceId: meta.targetSurfaceId,
-                    ridePlatformId: meta.ridePlatformId,
-                    ridePlatformIdType: typeof meta.ridePlatformId,
-                    metaKeys: Object.keys(meta)
-                });
+                // console.log('🔵 [ActionExecutor] JUMP triggered', {
+                //     isReady,
+                //     isGrounded: state.isGrounded,
+                //     distY: distY.toFixed(1),
+                //     toleranceY,
+                //     landingX: landingX.toFixed(1),
+                //     landingY: meta.targetY.toFixed(1),
+                //     currentX: (state.x + state.w / 2).toFixed(1),
+                //     currentY: (state.y + state.h).toFixed(1),
+                //     targetSurfaceId: meta.targetSurfaceId,
+                //     ridePlatformId: meta.ridePlatformId,
+                //     ridePlatformIdType: typeof meta.ridePlatformId,
+                //     metaKeys: Object.keys(meta)
+                // });
 
                 if (isReady) {
                     console.log('🎯 [ActionExecutor] Calling recalculateJump with:', {
@@ -344,9 +344,9 @@ export class ActionExecutor {
                 break;
 
             case 'DOUBLE_JUMP':
-                console.log('🔵 [ActionExecutor] DOUBLE_JUMP triggered', {
-                    hasWallClimbAccess: !!meta.wallClimbAccess
-                });
+                // console.log('🔵 [ActionExecutor] DOUBLE_JUMP triggered', {
+                //     hasWallClimbAccess: !!meta.wallClimbAccess
+                // });
 
                 if (isReady) {
                     this.jumpHandler.performDoubleJump(meta);
@@ -369,16 +369,16 @@ export class ActionExecutor {
                 break;
 
             case 'WALL_CLIMB':
-                console.log('🧗 [ActionExecutor] WALL_CLIMB triggered', {
-                    jumpType: meta.jumpType,
-                    wallEntryY: meta.wallEntryY?.toFixed(1),
-                    isReady,
-                    isGrounded: state.isGrounded
-                });
+                // console.log('🧗 [ActionExecutor] WALL_CLIMB triggered', {
+                //     jumpType: meta.jumpType,
+                //     wallEntryY: meta.wallEntryY?.toFixed(1),
+                //     isReady,
+                //     isGrounded: state.isGrounded
+                // });
 
                 if (isReady) {
                     if (meta.jumpType === 'DOUBLE_JUMP') {
-                        console.log('🔵 [ActionExecutor] WALL_CLIMB with DOUBLE_JUMP mode activated');
+                        // console.log('🔵 [ActionExecutor] WALL_CLIMB with DOUBLE_JUMP mode activated');
 
                         const doubleJumpMeta = {
                             velocity: meta.velocity,
@@ -398,7 +398,7 @@ export class ActionExecutor {
                         this.wallClimbMeta = meta;
 
                     } else {
-                        console.log('🔵 [ActionExecutor] WALL_CLIMB with SINGLE_JUMP');
+                        // console.log('🔵 [ActionExecutor] WALL_CLIMB with SINGLE_JUMP');
                         this.climbHandler.start(meta);
                     }
 
@@ -422,7 +422,7 @@ export class ActionExecutor {
     }
 
     private onRideAborted() {
-        console.log('⚠️ [ActionExecutor] RIDE ABORTED! Clearing path to force repath.');
+        // console.log('⚠️ [ActionExecutor] RIDE ABORTED! Clearing path to force repath.');
 
         // 🆕 Vide le path pour forcer un recalcul
         this.navigator.clearPath();

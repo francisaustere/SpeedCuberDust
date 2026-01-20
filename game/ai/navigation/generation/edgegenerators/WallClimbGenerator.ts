@@ -259,21 +259,21 @@ export class WallClimbGenerator {
         );
 
         if (optimalY > wallBottom - 20) {
-            console.log(`  ❌ Grab point would be below wall bottom (${optimalY.toFixed(0)} > ${(wallBottom - 20).toFixed(0)})`);
+            // console.log(`  ❌ Grab point would be below wall bottom (${optimalY.toFixed(0)} > ${(wallBottom - 20).toFixed(0)})`);
             return null;
         }
 
         if (optimalY >= source.y - 30) {
-            console.log(`  ❌ Grab point not below source (${optimalY.toFixed(0)} >= ${(source.y - 30).toFixed(0)})`);
+            // console.log(`  ❌ Grab point not below source (${optimalY.toFixed(0)} >= ${(source.y - 30).toFixed(0)})`);
             return null;
         }
 
         if (distH > maxJumpDist) {
-            console.log(`  ❌ Wall too far horizontally (${distH.toFixed(0)} > ${maxJumpDist.toFixed(0)})`);
+            //  console.log(`  ❌ Wall too far horizontally (${distH.toFixed(0)} > ${maxJumpDist.toFixed(0)})`);
             return null;
         }
 
-        console.log(`  ✅ Optimal grab point found: Y=${optimalY.toFixed(0)} (on wall from ${wallTop} to ${wallBottom})`);
+        // console.log(`  ✅ Optimal grab point found: Y=${optimalY.toFixed(0)} (on wall from ${wallTop} to ${wallBottom})`);
 
         return {
             x: wallX,
@@ -296,22 +296,22 @@ export class WallClimbGenerator {
 
         const maxJumpHeight = (this.config.jumpForce * this.config.jumpForce) / (2 * this.config.gravity);
 
-        console.log(`\n🧗 [WallClimbAccess] Checking access to wall grab point:`, {
-            sourceY: source.y,
-            grabPointY: wallGrabPoint.y,
-            dy: dy.toFixed(0),
-            dx: dx.toFixed(0),
-            side: wallGrabPoint.side,
-            startX: startX.toFixed(0),
-            destX: wallGrabPoint.x.toFixed(0)
-        });
+        // console.log(`\n🧗 [WallClimbAccess] Checking access to wall grab point:`, {
+        //     sourceY: source.y,
+        //     grabPointY: wallGrabPoint.y,
+        //     dy: dy.toFixed(0),
+        //     dx: dx.toFixed(0),
+        //     side: wallGrabPoint.side,
+        //     startX: startX.toFixed(0),
+        //     destX: wallGrabPoint.x.toFixed(0)
+        // });
 
         // Essayer SIMPLE JUMP
         if (dy > -maxJumpHeight) {
             const jumpConfig = this.simulator.calculateJumpVelocity(dx, dy, startX, source.y, target);
 
             if (jumpConfig) {
-                console.log(`  ✅ SIMPLE JUMP to wall grab point created!`);
+                // console.log(`  ✅ SIMPLE JUMP to wall grab point created!`);
 
                 const edge: Edge = {
                     targetSurfaceId: target.id,
@@ -333,7 +333,7 @@ export class WallClimbGenerator {
         }
 
         // Essayer DOUBLE_JUMP
-        console.log(`  🔵 Trying DOUBLE_JUMP to wall grab point...`);
+        // console.log(`  🔵 Trying DOUBLE_JUMP to wall grab point...`);
         const delayFrames = 15;
         const airTimeFrames = this.simulator.solveDoubleJumpTime(dy, this.config.jumpForce, delayFrames, this.config.jumpForce);
 
@@ -341,7 +341,7 @@ export class WallClimbGenerator {
             const reqVx = dx / airTimeFrames;
 
             if (Math.abs(reqVx) <= this.config.maxSpeed * 4) {
-                console.log(`  ✅ DOUBLE_JUMP to wall grab point created!`);
+                //console.log(`  ✅ DOUBLE_JUMP to wall grab point created!`);
 
                 const edge: Edge = {
                     targetSurfaceId: target.id,
@@ -365,7 +365,7 @@ export class WallClimbGenerator {
             }
         }
 
-        console.log(`  ❌ No jump can reach wall grab point`);
+        // console.log(`  ❌ No jump can reach wall grab point`);
         return false;
     }
 }

@@ -37,14 +37,14 @@ export class JumpGenerator {
             const steeringBonus = totalAirTime * 0.5;
             maxAirTime = totalAirTime + steeringBonus;
 
-            console.log(`  📉 [JumpGenerator] Falling jump:`, {
-                dy: dy.toFixed(0),
-                t_up: t_up.toFixed(2),
-                t_down: t_down.toFixed(2),
-                totalAirTime: totalAirTime.toFixed(2),
-                steeringBonus: steeringBonus.toFixed(2),
-                maxAirTime: maxAirTime.toFixed(2)
-            });
+            // console.log(`  📉 [JumpGenerator] Falling jump:`, {
+            //     dy: dy.toFixed(0),
+            //     t_up: t_up.toFixed(2),
+            //     t_down: t_down.toFixed(2),
+            //     totalAirTime: totalAirTime.toFixed(2),
+            //     steeringBonus: steeringBonus.toFixed(2),
+            //     maxAirTime: maxAirTime.toFixed(2)
+            // });
 
         } else {
             // ✅ Saut vers le HAUT
@@ -63,13 +63,13 @@ export class JumpGenerator {
         });
 
         const attempts = this.calculateJumpAttempts(source, target, jumpMargin);
-        console.log(`  📍 [JumpGenerator] ${attempts.length} attempts generated:`, attempts);
+        // console.log(`  📍 [JumpGenerator] ${attempts.length} attempts generated:`, attempts);
 
         let simpleJumpFound = false;
 
         for (const attempt of attempts) {
             if (attempt.start < source.left || attempt.start > source.right) {
-                console.log(`  ❌ [JumpGenerator] Attempt ${attempt.label} REJECTED (startX out of bounds)`);
+                // console.log(`  ❌ [JumpGenerator] Attempt ${attempt.label} REJECTED (startX out of bounds)`);
                 continue;
             }
 
@@ -78,12 +78,12 @@ export class JumpGenerator {
             const dx = destX - startX;
             const distH = Math.abs(dx);
 
-            console.log(`  🎯 [JumpGenerator] Trying attempt ${attempt.label}:`, {
-                startX: startX.toFixed(0),
-                destX: destX.toFixed(0),
-                dx: dx.toFixed(0),
-                distH: distH.toFixed(0)
-            });
+            // console.log(`  🎯 [JumpGenerator] Trying attempt ${attempt.label}:`, {
+            //     startX: startX.toFixed(0),
+            //     destX: destX.toFixed(0),
+            //     dx: dx.toFixed(0),
+            //     distH: distH.toFixed(0)
+            // });
 
             const verticalRatio = Math.abs(dy) / maxJumpHeight;
             const horizontalRatio = distH / maxJumpDist;
@@ -94,28 +94,28 @@ export class JumpGenerator {
             if (dy < 0) {
                 // ✅ Saut vers le HAUT : strict
                 isRiskyJump = verticalRatio > 0.75 || horizontalRatio > 0.75;
-                console.log(`  📊 [JumpGenerator] Upward jump risk:`, {
-                    verticalRatio: verticalRatio.toFixed(2),
-                    horizontalRatio: horizontalRatio.toFixed(2),
-                    isRisky: isRiskyJump
-                });
+                // console.log(`  📊 [JumpGenerator] Upward jump risk:`, {
+                //     verticalRatio: verticalRatio.toFixed(2),
+                //     horizontalRatio: horizontalRatio.toFixed(2),
+                //     isRisky: isRiskyJump
+                // });
 
             } else if (dy > maxJumpHeight * 0.5) {
                 // ✅ Saut vers le BAS significatif : très permissif
                 isRiskyJump = horizontalRatio > 0.95;
-                console.log(`  📊 [JumpGenerator] Falling jump risk:`, {
-                    dy: dy.toFixed(0),
-                    horizontalRatio: horizontalRatio.toFixed(2),
-                    isRisky: isRiskyJump
-                });
+                // console.log(`  📊 [JumpGenerator] Falling jump risk:`, {
+                //     dy: dy.toFixed(0),
+                //     horizontalRatio: horizontalRatio.toFixed(2),
+                //     isRisky: isRiskyJump
+                // });
 
             } else {
                 // ✅ Saut horizontal ou légère descente : modéré
                 isRiskyJump = horizontalRatio > 0.85;
-                console.log(`  📊 [JumpGenerator] Horizontal jump risk:`, {
-                    horizontalRatio: horizontalRatio.toFixed(2),
-                    isRisky: isRiskyJump
-                });
+                // console.log(`  📊 [JumpGenerator] Horizontal jump risk:`, {
+                //     horizontalRatio: horizontalRatio.toFixed(2),
+                //     isRisky: isRiskyJump
+                // });
             }
 
             const isMovingTarget = target.originalPlatformId !== undefined;
@@ -129,7 +129,7 @@ export class JumpGenerator {
             const isHighSpeedTarget = targetSpeed > 50;
 
             if (dy > -maxJumpHeight && distH < maxJumpDist) {
-                console.log(`  ✅ [JumpGenerator] Conditions met! Trying calculateJumpVelocity...`);
+                // console.log(`  ✅ [JumpGenerator] Conditions met! Trying calculateJumpVelocity...`);
 
                 let jumpConfig: { x: number; y: number } | null = null;
 
@@ -147,9 +147,9 @@ export class JumpGenerator {
                     jumpConfig = this.simulator.calculateJumpVelocity(dx, dy, startX, source.y, target);
 
                     if (jumpConfig) {
-                        console.log(`  ✅ [JumpGenerator] JUMP velocity found! vx=${jumpConfig.x.toFixed(2)}, vy=${jumpConfig.y.toFixed(2)}`);
+                        // console.log(`  ✅ [JumpGenerator] JUMP velocity found! vx=${jumpConfig.x.toFixed(2)}, vy=${jumpConfig.y.toFixed(2)}`);
                     } else {
-                        console.log(`  ❌ [JumpGenerator] calculateJumpVelocity FAILED`);
+                        // console.log(`  ❌ [JumpGenerator] calculateJumpVelocity FAILED`);
                     }
                 }
 
@@ -173,19 +173,19 @@ export class JumpGenerator {
                     simpleJumpFound = true;
 
                     if (isRiskyJump || isHighSpeedTarget) {
-                        console.log(`⚠️ Risky JUMP, generating DOUBLE_JUMP fallback`);
+                        // console.log(`⚠️ Risky JUMP, generating DOUBLE_JUMP fallback`);
                         this.tryAddDoubleJump(source, target, startX, dx, dy);
                     }
                 }
             } else {
-                console.log(`  ❌ [JumpGenerator] Conditions not met:`, {
-                    'dy > -maxJumpHeight': dy > -maxJumpHeight,
-                    'distH < maxJumpDist': distH < maxJumpDist
-                });
+                // console.log(`  ❌ [JumpGenerator] Conditions not met:`, {
+                //     'dy > -maxJumpHeight': dy > -maxJumpHeight,
+                //     'distH < maxJumpDist': distH < maxJumpDist
+                // });
             }
 
             if (!simpleJumpFound || isRiskyJump || isHighSpeedTarget) {
-                console.log(`  🔵 [JumpGenerator] Trying DOUBLE_JUMP...`);
+                // console.log(`  🔵 [JumpGenerator] Trying DOUBLE_JUMP...`);
                 this.tryAddDoubleJump(source, target, startX, dx, dy);
             }
 
@@ -294,12 +294,12 @@ export class JumpGenerator {
                     const safetyBuffer = 15;
 
                     if (maxPossibleDist < minRequiredDist + safetyBuffer) {
-                        console.log(`  ❌ [JumpGenerator] Clamped speed safe-check FAILED. Need: ${(minRequiredDist + safetyBuffer).toFixed(0)}, Max Possible: ${maxPossibleDist.toFixed(0)}`);
+                        // console.log(`  ❌ [JumpGenerator] Clamped speed safe-check FAILED. Need: ${(minRequiredDist + safetyBuffer).toFixed(0)}, Max Possible: ${maxPossibleDist.toFixed(0)}`);
                         // This "fake" valid jump is rejected. Loop will try other delays or stop.
                         continue;
                     }
 
-                    console.log(`  ⚠️ [JumpGenerator] Clamping DoubleJump Vx ${reqVx.toFixed(2)} -> ${finalVx.toFixed(2)} (Safe clearance: +${(maxPossibleDist - minRequiredDist).toFixed(1)}px)`);
+                    // console.log(`  ⚠️ [JumpGenerator] Clamping DoubleJump Vx ${reqVx.toFixed(2)} -> ${finalVx.toFixed(2)} (Safe clearance: +${(maxPossibleDist - minRequiredDist).toFixed(1)}px)`);
                 }
 
                 const vx1 = finalVx;
@@ -335,7 +335,7 @@ export class JumpGenerator {
                     }
 
                     source.neighbors.push(edge);
-                    console.log(`✅ DOUBLE_JUMP added! (delay: ${delayFrames})`);
+                    // console.log(`✅ DOUBLE_JUMP added! (delay: ${delayFrames})`);
                     return; // Stop if we found a working solution
                 }
             }

@@ -51,6 +51,8 @@ const configStub = () => {
       jumpExponent: 2.0,
       enableExitLookAt: true
     },
+    showNavigationDebug: false,
+    setShowNavigationDebug: () => { },
     enemyConfig: {
       ...EnemyConfiguration.DEFAULTS
     },
@@ -109,7 +111,7 @@ const configStub = () => {
     activeDeformationProfile: 'Profile 1',
     setActiveDeformationProfile: () => { },
     createDeformationProfile: () => { },
-    drawConfig: { showHitboxes: false, showDroneViewCones: false, showWalkerViewCones: false, showWalkerColliders: false, showWalkerHearingRange: false, showWalkerSocialRange: false, showEnemyLogic: false, showPathfindingNodes: false, showPlatformIds: false },
+    drawConfig: { showHitboxes: false, showDroneViewCones: false, showWalkerViewCones: false, showWalkerColliders: false, showWalkerHearingRange: false, showWalkerSocialRange: false, showEnemyLogic: false, showPathfindingNodes: false, showPlatformIds: false, showNavigationDebug: true },
     updateDrawConfig: () => { },
     pathfindingConfig: { defaultCost: 1, blockedCost: 1000, nodeClearance: 35 },
     updatePathfinding: () => { },

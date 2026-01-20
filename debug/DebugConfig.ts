@@ -3,7 +3,7 @@ import { GAME_Config, SCENE_Config } from '../config/constants';
 import { StorageManager } from '../utils/StorageManager';
 
 // Import New Configuration Sources
-import { ThemeConfig, ItemVisual, DEFAULT_THEME } from '../../config/theme';
+import { ThemeConfig, ItemVisual, DEFAULT_THEME } from '../config/theme';
 import { PhysicsConfig, DEFAULT_PHYSICS_CONFIG } from '../config/physics';
 import { GridConfig, PostProcessConfig, LightConfig, RainbowConfig, DEFAULT_GRID, DEFAULT_LIGHT, DEFAULT_POST_PROCESS, DEFAULT_RAINBOW } from '../engine/rendering/EnvironmentSettings';
 import { EnemyConfig, EnemyConfiguration } from '../game/components/EnemyConfiguration';
@@ -41,6 +41,7 @@ export interface DrawConfig {
     showEnemyLogic: boolean;
     showPathfindingNodes: boolean;
     showPlatformIds: boolean;
+    showNavigationDebug: boolean;
 }
 
 export interface PathfindingConfig {
@@ -54,21 +55,23 @@ export const CONFIG_STORAGE_KEY = 'speedcuber_config_v15'; // Bumping version ag
 export const useDebugConfig = () => {
     const [isDevMode, setIsDevMode] = useState(false);
     const [showDevUI, setShowDevUI] = useState(true);
+    const [showNavigationDebug, setShowNavigationDebug] = useState(true);
     const [activeDebugSection, setActiveDebugSection] = useState<string | null>(null);
 
     const [timeScale, setTimeScale] = useState(1);
     const isResettingRef = useRef(false);
 
-    const getSaved = () => {
-        try {
-            const s = StorageManager.getItem(CONFIG_STORAGE_KEY);
-            return s ? JSON.parse(s) : {};
-        } catch (e) {
-            console.warn("Failed to load config, resetting", e);
-            return {};
-        }
-    };
-    const [saved] = useState(getSaved);
+    // const getSaved = () => {
+    //     try {
+    //         const s = StorageManager.getItem(CONFIG_STORAGE_KEY);
+    //         return s ? JSON.parse(s) : {};
+    //     } catch (e) {
+    //         console.warn("Failed to load config, resetting", e);
+    //         return {};
+    //     }
+    // };
+    // const [saved] = useState(getSaved);
+    const [saved] = useState<any>({}); // Force empty, no cache loading
 
     const PROFILE_2_VALUES = {
         ...DEFAULT_PHYSICS_CONFIG,
@@ -137,9 +140,10 @@ export const useDebugConfig = () => {
         showWalkerColliders: false,
         showWalkerHearingRange: false,
         showWalkerSocialRange: false,
-        showEnemyLogic: true, 
+        showEnemyLogic: true,
         showPathfindingNodes: false,
-        showPlatformIds: false
+        showPlatformIds: false,
+        showNavigationDebug: true
     });
 
     const [pathfindingConfig, setPathfindingConfig] = useState<PathfindingConfig>(saved.pathfindingConfig || {
@@ -260,6 +264,8 @@ export const useDebugConfig = () => {
     const [bpm, setBpm] = useState(128);
 
     useEffect(() => {
+        // Cache disabled by user request
+        /*
         if (isResettingRef.current) return;
 
         const configToSave = {
@@ -285,6 +291,7 @@ export const useDebugConfig = () => {
             pathfindingConfig
         };
         StorageManager.setItem(CONFIG_STORAGE_KEY, JSON.stringify(configToSave));
+        */
     }, [
         physicsConfig, gridConfig, visualConfig, rainbowConfig,
         postProcessConfig, lightConfig, enemyConfig, vanishingConfig, cameraConfig,
